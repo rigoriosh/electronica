@@ -59,17 +59,70 @@ void loop() {
 }
 
 void inicioLogicaControlador(){
+  setLowOutputs();
   leerEntradas();
   if(entrada_Master == LOW){
 
-    if(entrada_Micro == LOW){
-      logicaConMicro();
-    }else{
-      logicaSinMicro();
+          if(entrada_PUL_S1 == 0 and entrada_PUL_S2 == 0 and entrada_PUL_S3 == 0){
+      if(entrada_Micro == LOW){
+          encenderTodoConMicro();
+        }else{
+          encenderTodoSinMicro();
+        }
+        delay(delayAntiRebote);
+    }else if(entrada_PUL_S1 == 0 and entrada_PUL_S2 == 0 and entrada_PUL_S3 == 1){
+      if(entrada_Micro == LOW){
+          encenderUnoyDosConMicro();
+        }else{
+          encenderUnoyDosSinMicro();
+        }
+        delay(delayAntiRebote);
+    }else if(entrada_PUL_S1 == 0 and entrada_PUL_S2 == 1 and entrada_PUL_S3 == 0){
+      if(entrada_Micro == LOW){
+          encenderUnoyTresConMicro();
+        }else{
+          encenderUnoyTresSinMicro();
+        }
+        delay(delayAntiRebote);
+    }else if(entrada_PUL_S1 == 1 and entrada_PUL_S2 == 0 and entrada_PUL_S3 == 0){
+      if(entrada_Micro == LOW){
+          encenderDosyTresConMicro();
+        }else{
+          encenderDosyTresSinMicro();
+        }
+        delay(delayAntiRebote);
+    }else if(entrada_PUL_S1 == 0 and entrada_PUL_S2 == 1 and entrada_PUL_S3 == 1){
+      if(entrada_Micro == LOW){
+          digitalWrite(S1, !oFF_Salidas);
+          digitalWrite(S4, !oFF_Salidas);
+        }else{
+          digitalWrite(S1, !oFF_Salidas);
+        }    
+        delay(delayAntiRebote);
+    }else if(entrada_PUL_S1 == 1 and entrada_PUL_S2 == 0 and entrada_PUL_S3 == 1){
+      if(entrada_Micro == LOW){
+          digitalWrite(S2, !oFF_Salidas);
+          digitalWrite(S5, !oFF_Salidas);
+        }else{
+          digitalWrite(S2, !oFF_Salidas);
+        }
+        delay(delayAntiRebote);
+    }else if(entrada_PUL_S1 == 1 and entrada_PUL_S2 == 1 and entrada_PUL_S3 == 0){
+        if(entrada_Micro == LOW){
+          digitalWrite(S3, !oFF_Salidas);
+          digitalWrite(S6, !oFF_Salidas);
+        }else{
+          digitalWrite(S3, !oFF_Salidas);
+        }
+        delay(delayAntiRebote);
+      }
+    
+    
+    
+    else{
+      setLowOutputs();
     }
 
-  }else{
-    setLowOutputs();
   }
 }
 
@@ -88,37 +141,51 @@ void resetMemoria(){
   }
 }
 
-void logicaConMicro(){
-    if(entrada_PUL_S1 == LOW){
-      digitalWrite(S1, !oFF_Salidas);
-      digitalWrite(S4, !oFF_Salidas);
-      delay(delayAntiRebote);
-    }else if(entrada_PUL_S2 == LOW and memoriaOK){
-      digitalWrite(S2, !oFF_Salidas);
-      digitalWrite(S5, !oFF_Salidas);
-      delay(delayAntiRebote);
-    }else if(entrada_PUL_S3 == LOW and memoriaOK){
-      digitalWrite(S3, !oFF_Salidas);
-      digitalWrite(S6, !oFF_Salidas);
-      delay(delayAntiRebote);
-    }else{
-      setLowOutputs();
-    }
+
+void encenderTodoConMicro(){
+  digitalWrite(S1, !oFF_Salidas);
+  digitalWrite(S4, !oFF_Salidas);
+  digitalWrite(S2, !oFF_Salidas);
+  digitalWrite(S5, !oFF_Salidas);
+  digitalWrite(S3, !oFF_Salidas);
+  digitalWrite(S6, !oFF_Salidas);
+}
+void encenderTodoSinMicro(){
+  digitalWrite(S1, !oFF_Salidas);
+  digitalWrite(S2, !oFF_Salidas);
+  digitalWrite(S3, !oFF_Salidas);
+
 }
 
-void logicaSinMicro(){
-    if(entrada_PUL_S1 == LOW){
-      digitalWrite(S1, !oFF_Salidas);
-      delay(delayAntiRebote);
-    }else if(entrada_PUL_S2 == LOW and memoriaOK){
-      digitalWrite(S2, !oFF_Salidas);
-      delay(delayAntiRebote);
-    }else if(entrada_PUL_S3 == LOW and memoriaOK){
-      digitalWrite(S3, !oFF_Salidas);
-      delay(delayAntiRebote);
-    }else{
-      setLowOutputs();
-    }
+void encenderUnoyDosSinMicro(){
+  digitalWrite(S1, !oFF_Salidas);
+  digitalWrite(S2, !oFF_Salidas);
+}
+void encenderUnoyTresSinMicro(){
+  digitalWrite(S1, !oFF_Salidas);
+  digitalWrite(S3, !oFF_Salidas);
+}
+void encenderDosyTresSinMicro(){
+  digitalWrite(S2, !oFF_Salidas);
+  digitalWrite(S3, !oFF_Salidas);
+}
+void encenderUnoyDosConMicro(){
+  digitalWrite(S1, !oFF_Salidas);
+  digitalWrite(S4, !oFF_Salidas);
+  digitalWrite(S2, !oFF_Salidas);
+  digitalWrite(S5, !oFF_Salidas);
+}
+void encenderUnoyTresConMicro(){
+  digitalWrite(S1, !oFF_Salidas);
+  digitalWrite(S4, !oFF_Salidas);
+  digitalWrite(S3, !oFF_Salidas);
+  digitalWrite(S6, !oFF_Salidas);
+}
+void encenderDosyTresConMicro(){
+  digitalWrite(S2, !oFF_Salidas);
+  digitalWrite(S5, !oFF_Salidas);
+  digitalWrite(S3, !oFF_Salidas);
+  digitalWrite(S6, !oFF_Salidas);
 }
 
 void leerEntradas(){
