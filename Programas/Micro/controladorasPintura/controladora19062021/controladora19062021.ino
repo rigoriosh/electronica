@@ -17,9 +17,20 @@ const int delayPrueba = 200;
 //VARIABLES
 int oFF_Salidas = 1;
 
+int entrada_PUL_S1 = 0;
+int entrada_PUL_S2 = 0;
+int entrada_PUL_S3 = 0;
+int entrada_Master = 0;
+int entrada_Micro = 0;
+ 
 
 void setup() {
-  
+  pinMode(PUL_S1, INPUT_PULLUP);
+  pinMode(PUL_S2, INPUT_PULLUP);
+  pinMode(PUL_S3, INPUT_PULLUP);
+  pinMode(Master, INPUT_PULLUP);
+  pinMode(Micro, INPUT_PULLUP);
+
   pinMode(S1, OUTPUT);
   pinMode(S2, OUTPUT);
   pinMode(S3, OUTPUT);
@@ -32,11 +43,35 @@ void setup() {
 
 void loop() {
   
+  probandoEntradas();
 
   
 }
 
+void probandoEntradas(){
+  leerEntradas();
+  if(entrada_PUL_S1 == LOW){
+    digitalWrite(S1, !oFF_Salidas);
+  }else if(entrada_PUL_S2 == LOW){
+    digitalWrite(S2, !oFF_Salidas);
+  }else if(entrada_PUL_S3 == LOW){
+    digitalWrite(S3, !oFF_Salidas);
+  }else if(entrada_Master == LOW){
+    digitalWrite(S4, !oFF_Salidas);
+  }else if(entrada_Micro == LOW){
+    digitalWrite(S5, !oFF_Salidas);
+  }else{
+    setLowOutputs();
+  }
+}
 
+void leerEntradas(){
+  entrada_PUL_S1 = digitalRead(PUL_S1);
+  entrada_PUL_S2 = digitalRead(PUL_S2);
+  entrada_PUL_S3 = digitalRead(PUL_S3);
+  entrada_Master = digitalRead(Master);
+  entrada_Micro = digitalRead(Micro);
+}
 
 void setLowOutputs(){
   
