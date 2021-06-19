@@ -1,37 +1,196 @@
-/*
-  Blink
+#include <EEPROM.h>
+// Entradas
+const int PUL_S1 = 2;
+const int PUL_S2 = 4;
+const int PUL_S3 = 7;
+const int Master = 8;
+const int Micro = 12;
+// Salidas
+const int S1 = 3;
+const int S2 = 5;
+const int S3 = 6;
+const int S4 = 9;
+const int S5 = 10;
+const int S6 = 11;
+//CONSTANTES
+const int delayPrueba = 200;
+const int delayAntiRebote = 150;
+const int dirMemoria = 0;
 
-  Turns an LED on for one second, then off for one second, repeatedly.
+//VARIABLES
+int oFF_Salidas = 1;
+bool memoriaOK = true;
+byte valueMemoria;
 
-  Most Arduinos have an on-board LED you can control. On the UNO, MEGA and ZERO
-  it is attached to digital pin 13, on MKR1000 on pin 6. LED_BUILTIN is set to
-  the correct LED pin independent of which board is used.
-  If you want to know what pin the on-board LED is connected to on your Arduino
-  model, check the Technical Specs of your board at:
-  https://www.arduino.cc/en/Main/Products
 
-  modified 8 May 2014
-  by Scott Fitzgerald
-  modified 2 Sep 2016
-  by Arturo Guadalupi
-  modified 8 Sep 2016
-  by Colby Newman
 
-  This example code is in the public domain.
+int entrada_PUL_S1 = 0;
+int entrada_PUL_S2 = 0;
+int entrada_PUL_S3 = 0;
+int entrada_Master = 0;
+int entrada_Micro = 0;
+ 
 
-  http://www.arduino.cc/en/Tutorial/Blink
-*/
-
-// the setup function runs once when you press reset or power the board
 void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
-  pinMode(LED_BUILTIN, OUTPUT);
+//  Serial.begin(9600);
+//  while (!Serial) {
+//    ; // wait for serial port to connect. Needed for native USB port only
+//  }
+  pinMode(PUL_S1, INPUT_PULLUP);
+  pinMode(PUL_S2, INPUT_PULLUP);
+  pinMode(PUL_S3, INPUT_PULLUP);
+  pinMode(Master, INPUT_PULLUP);
+  pinMode(Micro, INPUT_PULLUP);
+
+  pinMode(S1, OUTPUT);
+  pinMode(S2, OUTPUT);
+  pinMode(S3, OUTPUT);
+  pinMode(S4, OUTPUT);
+  pinMode(S5, OUTPUT);
+  pinMode(S6, OUTPUT);
+  setLowOutputs();
+  
 }
 
-// the loop function runs over and over again forever
+
 void loop() {
-  digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(1000);                       // wait for a second
-  digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
-  delay(1000);                       // wait for a second
+  inicioLogicaControlador();
+  
+}
+
+void inicioLogicaControlador(){
+  leerEntradas();
+  if(entrada_Master == LOW){
+
+    if(entrada_Micro == LOW){
+      logicaConMicro();
+    }else{
+      logicaSinMicro();
+    }
+
+  }else{
+    setLowOutputs();
+  }
+}
+
+void escribirMemoria(int addr, int val){
+  EEPROM.write(addr, val);
+}
+
+byte leerMemoria(int addr){
+  byte valorLeido = EEPROM.read(addr);
+  return valorLeido;
+}
+
+void resetMemoria(){
+  for (int i = 0 ; i < EEPROM.length() ; i++) {
+    EEPROM.write(i, 0);
+  }
+}
+
+void logicaConMicro(){
+    if(entrada_PUL_S1 == LOW){
+      digitalWrite(S1, !oFF_Salidas);
+      digitalWrite(S4, !oFF_Salidas);
+      delay(delayAntiRebote);
+    }else if(entrada_PUL_S2 == LOW and memoriaOK){
+      digitalWrite(S2, !oFF_Salidas);
+      digitalWrite(S5, !oFF_Salidas);
+      delay(delayAntiRebote);
+    }else if(entrada_PUL_S3 == LOW and memoriaOK){
+      digitalWrite(S3, !oFF_Salidas);
+      digitalWrite(S6, !oFF_Salidas);
+      delay(delayAntiRebote);
+    }else{
+      setLowOutputs();
+    }
+}
+
+void logicaSinMicro(){
+    if(entrada_PUL_S1 == LOW){
+      digitalWrite(S1, !oFF_Salidas);
+      delay(delayAntiRebote);
+    }else if(entrada_PUL_S2 == LOW and memoriaOK){
+      digitalWrite(S2, !oFF_Salidas);
+      delay(delayAntiRebote);
+    }else if(entrada_PUL_S3 == LOW and memoriaOK){
+      digitalWrite(S3, !oFF_Salidas);
+      delay(delayAntiRebote);
+    }else{
+      setLowOutputs();
+    }
+}
+
+void leerEntradas(){
+  entrada_PUL_S1 = digitalRead(PUL_S1);
+  entrada_PUL_S2 = digitalRead(PUL_S2);
+  entrada_PUL_S3 = digitalRead(PUL_S3);
+  entrada_Master = digitalRead(Master);
+  entrada_Micro = digitalRead(Micro);
+}
+
+void setLowOutputs(){
+  
+  digitalWrite(S1, oFF_Salidas);
+  digitalWrite(S2, oFF_Salidas);
+  digitalWrite(S3, oFF_Salidas);
+  digitalWrite(S4, oFF_Salidas);
+  digitalWrite(S5, oFF_Salidas);
+  digitalWrite(S6, oFF_Salidas);  
+}
+
+void PruebasSalidas(){
+  for(int i = 0; i < 3; i++){
+    secuecniaPrueba();
+  }
+
+  for(int i = 0; i < 3; i++){
+    blinkAllOut();
+  }
+}
+
+
+void secuecniaPrueba(){
+  digitalWrite(S1, !oFF_Salidas);
+  delay(delayPrueba);  
+  digitalWrite(S1, oFF_Salidas);
+  delay(delayPrueba);
+  digitalWrite(S2, !oFF_Salidas);
+  delay(delayPrueba);  
+  digitalWrite(S2, oFF_Salidas);
+  delay(delayPrueba);
+  digitalWrite(S3, !oFF_Salidas);
+  delay(delayPrueba);  
+  digitalWrite(S3, oFF_Salidas);
+  delay(delayPrueba);
+  digitalWrite(S4, !oFF_Salidas);
+  delay(delayPrueba);  
+  digitalWrite(S4, oFF_Salidas);
+  delay(delayPrueba);
+  digitalWrite(S5, !oFF_Salidas);
+  delay(delayPrueba);  
+  digitalWrite(S5, oFF_Salidas);
+  delay(delayPrueba);
+  digitalWrite(S6, !oFF_Salidas);
+  delay(delayPrueba);  
+  digitalWrite(S6, oFF_Salidas);
+  delay(delayPrueba);
+}
+
+void blinkAllOut(){
+  oFF_Salidas = 0;
+  setLowOutputs();
+  delay(delayPrueba);
+  oFF_Salidas = 1;
+  setLowOutputs();
+  delay(delayPrueba);
+  
+}
+
+void logicaEEPROM(){
+  //valueMemoria = leerMemoria(0);
+  
+  Serial.println(leerMemoria(0), DEC);
+  
+  delay(2000);
 }
