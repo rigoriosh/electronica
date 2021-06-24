@@ -5,6 +5,8 @@ const int PUL_S2 = 4;
 const int PUL_S3 = 7;
 const int Master = 8;
 const int Micro = 12;
+const int Reset = 13;
+
 // Salidas
 const int S1 = 3;
 const int S2 = 5;
@@ -18,18 +20,15 @@ const int delayAntiRebote = 500;
 const int dirMemoria = 0;
 
 //VARIABLES
-int oFF_Salidas = 1;
-bool memoriaOK = true;
-byte valueMemoria;
-
-
-
 int entrada_PUL_S1 = 0;
 int entrada_PUL_S2 = 0;
 int entrada_PUL_S3 = 0;
 int entrada_Master = 0;
 int entrada_Micro = 0;
 
+int oFF_Salidas = 1;
+bool memoriaOK = true;
+int valueMemoria;
 
 void setup() {
 //  Serial.begin(9600);
@@ -41,6 +40,7 @@ void setup() {
   pinMode(PUL_S3, INPUT_PULLUP);
   pinMode(Master, INPUT_PULLUP);
   pinMode(Micro, INPUT_PULLUP);
+  pinMode(Reset, INPUT_PULLUP);
 
   pinMode(S1, OUTPUT);
   pinMode(S2, OUTPUT);
@@ -49,9 +49,8 @@ void setup() {
   pinMode(S5, OUTPUT);
   pinMode(S6, OUTPUT);
   setLowOutputs();
-  
+  check_eeprom();
 }
-
 
 void loop() {
   inicioLogicaControlador();
@@ -74,7 +73,7 @@ void inicioLogicaControlador(){
       digitalWrite(S4, oFF_Salidas);
     }
 
-    if(entrada_PUL_S2 == 0){
+    if(entrada_PUL_S2 == 0 and memoriaOK == true){
       digitalWrite(S2, !oFF_Salidas);
       if(entrada_Micro == LOW){
         digitalWrite(S5, !oFF_Salidas);
@@ -86,7 +85,7 @@ void inicioLogicaControlador(){
       digitalWrite(S5, oFF_Salidas);
     }
 
-    if(entrada_PUL_S3 == 0){
+    if(entrada_PUL_S3 == 0 and memoriaOK == true){
       digitalWrite(S3, !oFF_Salidas);
       if(entrada_Micro == LOW){
         digitalWrite(S6, !oFF_Salidas);
@@ -103,21 +102,11 @@ void inicioLogicaControlador(){
     }
 }
 
-void escribirMemoria(int addr, int val){
-  EEPROM.write(addr, val);
-}
-
-byte leerMemoria(int addr){
-  byte valorLeido = EEPROM.read(addr);
-  return valorLeido;
-}
-
 void resetMemoria(){
   for (int i = 0 ; i < EEPROM.length() ; i++) {
     EEPROM.write(i, 0);
   }
 }
-
 
 void leerEntradas(){
   entrada_PUL_S1 = digitalRead(PUL_S1);
@@ -146,7 +135,6 @@ void PruebasSalidas(){
     blinkAllOut();
   }
 }
-
 
 void secuecniaPrueba(){
   digitalWrite(S1, !oFF_Salidas);
@@ -185,10 +173,20 @@ void blinkAllOut(){
   
 }
 
-void logicaEEPROM(){
-  //valueMemoria = leerMemoria(0);
+void check_eeprom(){
+
+  if(digitalRead(Reset) == LOW){
+    resetMemoria();
+    memoriaOK = true;
+  }else{
+    valueMemoria = EEPROM.read(0);
+    if(valueMemoria < 150){
+      valueMemoria = valueMemoria + 1;
+      EEPROM.write(0, valueMemoria);
+    }else{
+      memoriaOK = false;
+    }
+    delay(500);
+  }
   
-  Serial.println(leerMemoria(0), DEC);
-  
-  delay(2000);
 }
