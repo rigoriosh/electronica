@@ -190,3 +190,61 @@ void check_eeprom(){
   }
   
 }
+
+void setLowOutputs(){
+  
+  digitalWrite(S1, oFF_Salidas);
+  digitalWrite(S2, oFF_Salidas);
+  digitalWrite(S3, oFF_Salidas);
+  digitalWrite(S4, oFF_Salidas);
+  digitalWrite(S5, oFF_Salidas);
+  digitalWrite(S6, oFF_Salidas);  
+}
+
+void PruebasSalidas(){
+  for(int i = 0; i < 3; i++){
+    secuecniaPrueba();
+  }
+
+  for(int i = 0; i < 3; i++){
+    blinkAllOut();
+  }
+}
+
+
+void secuecniaPrueba(){
+  digitalWrite(S1, !oFF_Salidas);
+  delay(delayPrueba);  
+  digitalWrite(S1, oFF_Salidas);
+  delay(delayPrueba);
+  digitalWrite(S2, !oFF_Salidas);
+  delay(delayPrueba);  
+  digitalWrite(S2, oFF_Salidas);
+  delay(delayPrueba);
+  digitalWrite(S3, !oFF_Salidas);
+  delay(delayPrueba);  
+  digitalWrite(S3, oFF_Salidas);
+  delay(delayPrueba);
+  digitalWrite(S4, !oFF_Salidas);
+  delay(delayPrueba);  
+  digitalWrite(S4, oFF_Salidas);
+  delay(delayPrueba);
+  digitalWrite(S5, !oFF_Salidas);
+  delay(delayPrueba);  
+  digitalWrite(S5, oFF_Salidas);
+  delay(delayPrueba);
+  digitalWrite(S6, !oFF_Salidas);
+  delay(delayPrueba);  
+  digitalWrite(S6, oFF_Salidas);
+  delay(delayPrueba);
+}
+
+void blinkAllOut(){
+  oFF_Salidas = 0;
+  setLowOutputs();
+  delay(delayPrueba);
+  oFF_Salidas = 1;
+  setLowOutputs();
+  delay(delayPrueba);
+  
+}
