@@ -16,7 +16,7 @@ const int S5 = 10;
 const int S6 = 11;
 //CONSTANTES
 const int delayPrueba = 200;
-const int delayAntiRebote = 500;
+const int delayAntiRebote = 100;
 const int dirMemoria = 0;
 
 //VARIABLES
@@ -31,10 +31,10 @@ bool memoriaOK = true;
 int valueMemoria;
 
 void setup() {
-//  Serial.begin(9600);
-//  while (!Serial) {
-//    ; // wait for serial port to connect. Needed for native USB port only
-//  }
+    //  Serial.begin(9600);
+    //  while (!Serial) {
+    //    ; // wait for serial port to connect. Needed for native USB port only
+    //  }
   pinMode(PUL_S1, INPUT_PULLUP);
   pinMode(PUL_S2, INPUT_PULLUP);
   pinMode(PUL_S3, INPUT_PULLUP);
@@ -180,7 +180,7 @@ void check_eeprom(){
     memoriaOK = true;
   }else{
     valueMemoria = EEPROM.read(0);
-    if(valueMemoria < 150){
+    if(valueMemoria < 100){
       valueMemoria = valueMemoria + 1;
       EEPROM.write(0, valueMemoria);
     }else{
@@ -188,63 +188,5 @@ void check_eeprom(){
     }
     delay(500);
   }
-  
-}
-
-void setLowOutputs(){
-  
-  digitalWrite(S1, oFF_Salidas);
-  digitalWrite(S2, oFF_Salidas);
-  digitalWrite(S3, oFF_Salidas);
-  digitalWrite(S4, oFF_Salidas);
-  digitalWrite(S5, oFF_Salidas);
-  digitalWrite(S6, oFF_Salidas);  
-}
-
-void PruebasSalidas(){
-  for(int i = 0; i < 3; i++){
-    secuecniaPrueba();
-  }
-
-  for(int i = 0; i < 3; i++){
-    blinkAllOut();
-  }
-}
-
-
-void secuecniaPrueba(){
-  digitalWrite(S1, !oFF_Salidas);
-  delay(delayPrueba);  
-  digitalWrite(S1, oFF_Salidas);
-  delay(delayPrueba);
-  digitalWrite(S2, !oFF_Salidas);
-  delay(delayPrueba);  
-  digitalWrite(S2, oFF_Salidas);
-  delay(delayPrueba);
-  digitalWrite(S3, !oFF_Salidas);
-  delay(delayPrueba);  
-  digitalWrite(S3, oFF_Salidas);
-  delay(delayPrueba);
-  digitalWrite(S4, !oFF_Salidas);
-  delay(delayPrueba);  
-  digitalWrite(S4, oFF_Salidas);
-  delay(delayPrueba);
-  digitalWrite(S5, !oFF_Salidas);
-  delay(delayPrueba);  
-  digitalWrite(S5, oFF_Salidas);
-  delay(delayPrueba);
-  digitalWrite(S6, !oFF_Salidas);
-  delay(delayPrueba);  
-  digitalWrite(S6, oFF_Salidas);
-  delay(delayPrueba);
-}
-
-void blinkAllOut(){
-  oFF_Salidas = 0;
-  setLowOutputs();
-  delay(delayPrueba);
-  oFF_Salidas = 1;
-  setLowOutputs();
-  delay(delayPrueba);
   
 }
