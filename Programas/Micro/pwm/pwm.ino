@@ -47,5 +47,5 @@ void changePWM(boolean SUBIR){
     }
   }
   analogWrite(out_pinBase_FAN, salida_PWM);
-  delay(delay_antirrebote * multiplicador_delay_antirrebote);    
-}
+  delay(delay_antirrebote * multiplicador_delay_antirrebote);
+  }
