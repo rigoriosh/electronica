@@ -1,3 +1,29 @@
+// variables hardware
+const int btn_inSetup = 8;
+const int btn_UP = 7;
+const int btn_DOWN = 12;
+const int btn_TRIGGER = 4;
+const int salida_pwm_TEMP = 10;
+const int salida_pwm_FAN = 11;
+
+/// utils app
+const int delay_antirrebote = 20;
+const int delay_estados = 300;
+
+// variales temperatura
+const int rangTEMP_Min = 0;
+const int rangTEMP_Max = 30;
+const int constIncremetoDecrementoTEMP = 1;
+int setTEMP = 10;
+int stateTEMP = 0;
+
+// variales FAN
+const int rangFAN_Min = 0;
+const int rangFAN_Max = 100;
+const int constIncremetoDecrementoFAN = 5;
+int setFAN = 90;
+int stateFAN = 0;
+///
 // variables display
 #include <OLED_I2C.h>
 #include <math.h>
@@ -421,30 +447,7 @@ imagedatatype bateria[] PROGMEM={
   0x02, 0x07, 0x0F, 0x1D, 0x38, 0x70, 0x60, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // 0x03F0 (1008) pixels
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x60, 0x70, 0x38, 0x1D, 0x0F, 0x07, 0x02, 0x00,   // 0x0400 (1024) pixels
 };
-// variables hardware
-const int btn_inSetup = 8;
-const int btn_UP = 7;
-const int btn_DOWN = 12;
-const int btn_TRIGGER = 4;
-const int salida_pwm_TEMP = 10;
-const int salida_pwm_FAN = 11;
 
-/// utils app
-const int delay_antirrebote = 20;
-const int delay_estados = 300;
-
-// variales temperatura
-const int rangTEMP_Min = 0;
-const int rangTEMP_Max = 10;
-const int constIncremetoDecrementoTEMP = 1;
-int stateTEMP = 5;
-
-// variales FAN
-const int rangFAN_Min = 0;
-const int rangFAN_Max = 255;
-const int constIncremetoDecrementoFAN = 10;
-int stateFAN = 150;
-///
 
 void setup() {
   Serial.begin(9600);
@@ -460,11 +463,12 @@ void setup() {
 
 void loop() {
   
-  logica_panel_frontal();
+  renderizaPanelFrontal();
   
   if(query_state_inputDigital(btn_inSetup)){ // ingreso a ajustes
     TEMP_FAN_off_on("off");
     myOLED.invert(!invertirBackground); //  invierter el backgroud del display
+    Serial.println("fixes temppppp");
     ajustes_TEMP_FAN();
   }else{
     // consulta gatillo oprimido
@@ -509,31 +513,29 @@ void logica_panel_frontal(){
 }
 
 void renderizaPanelFrontal(){
-  Serial.println("panelFrontal");
-  Serial.print("Temp: ");
-  Serial.println(stateTEMP);
-  Serial.print("Fan: ");
-  Serial.println(stateFAN);
+  // Serial.println("panelFrontal");
+  // Serial.print("Temp: ");
+  // Serial.println(stateTEMP);
+  // Serial.print("Fan: ");
+  // Serial.println(stateFAN);
   myOLED.invert(invertirBackground); //  invierter el backgroud del display
   myOLED.setFont(SmallFont);//seteo el tamaño de la fuente
-  if(viewCurrent == 1){ // "PanelFrontal"
-    myOLED.drawBitmap(0,0,PanelFrontal,128,64);
-    myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
-    myOLED.printNumI(stateFAN, 0, 5);
-  }else if(viewCurrent == 2){ // "FAN"
-    myOLED.drawBitmap(0,0,FAN,128,64);
-    // myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
-    // myOLED.printNumI(stateFAN, 0, 30);
-  }else if(viewCurrent == 3){ // "containerSi"
-    myOLED.drawBitmap(0,0,containerSi,128,64);
-  }else if(viewCurrent == 4){ // "containerNo"
-    myOLED.drawBitmap(0,0,containerNo,128,64);
-  }else if(viewCurrent == 5){ // "bateria"
-    myOLED.drawBitmap(0,0,bateria,128,64);
-  }
+    initPanelFontal();
+  // if(viewCurrent == 1){ // "PanelFrontal"
+  // }else if(viewCurrent == 2){ // "FAN"
+  //   myOLED.drawBitmap(0,0,FAN,128,64);
+  //   // myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
+  //   // myOLED.printNumI(stateFAN, 0, 30);
+  // }else if(viewCurrent == 3){ // "containerSi"
+  //   myOLED.drawBitmap(0,0,containerSi,128,64);
+  // }else if(viewCurrent == 4){ // "containerNo"
+  //   myOLED.drawBitmap(0,0,containerNo,128,64);
+  // }else if(viewCurrent == 5){ // "bateria"
+  //   myOLED.drawBitmap(0,0,bateria,128,64);
+  // }
   myOLED.update();
-  viewPreview = viewCurrent;
-  viewCurrent = 0; // no vuelve a renderizar la pantalla
+  // viewPreview = viewCurrent;
+  // viewCurrent = 0; // no vuelve a renderizar la pantalla
   delay(delay_estados);
 }
 
@@ -550,42 +552,79 @@ boolean query_state_inputDigital(int pin){
 
 void TEMP_FAN_off_on(char action[]){
   if(action == "on"){
-    analogWrite(salida_pwm_TEMP, stateTEMP);
-    analogWrite(salida_pwm_FAN, stateFAN);
+    for(int i = 0; i <= setTEMP; i++){
+      analogWrite(salida_pwm_TEMP, i);
+
+    }
+    if(stateFAN < setFAN){
+      for(int i = 1; i <= setFAN; i++){
+        int pwm = (255 * i) / 100;
+        analogWrite(salida_pwm_FAN, pwm);
+        stateFAN = i; 
+        myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
+        myOLED.printNumI(i, 0, 5);
+        myOLED.update();
+      }
+    }
   }else{
     analogWrite(salida_pwm_TEMP, 0);
-    analogWrite(salida_pwm_FAN, 0);
+
+    if(stateFAN > 1){
+      for(int i = setFAN; i > 1; i--){
+        int pwm = (255 * i) / 100;
+        analogWrite(salida_pwm_FAN, pwm);
+        stateFAN = i; 
+        myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
+        myOLED.printNumI(i, 0, 5);
+        myOLED.update();
+        initPanelFontal();
+      }
+    }
+    stateFAN = 0; // resetstate del FAN
+    initPanelFontal();
   }
+}
+
+void initPanelFontal(){
+  myOLED.drawBitmap(0,0,PanelFrontal,128,64);
+  myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
+  myOLED.printNumI(stateFAN, 0, 5);
+  myOLED.update();
+}
+
+void setViewTemp(){
+  myOLED.clrScr(); // borra la pantalla
+  myOLED.setFont(SmallFont);//seteo el tamaño de la fuente
+  myOLED.drawBitmap(0,0,temperatura,128,64);
+}
+
+void setViewFAN(){
+  myOLED.clrScr(); // borra la pantalla
+  myOLED.setFont(SmallFont);//seteo el tamaño de la fuente
+  myOLED.drawBitmap(0,0,FAN,128,64);
 }
 
 void ajustes_TEMP_FAN(){
   delay(delay_estados);
     //muestra estado actual de la temperatura
   Serial.println("fixes temp");
+    setViewTemp();
+    myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
+    myOLED.printNumI(setTEMP, 70, 0);
+    myOLED.update();
   while(!query_state_inputDigital(btn_inSetup)){
+    
     delay(delay_estados);
+    myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
+    myOLED.printNumI(setTEMP, 70, 0);
+    myOLED.update();
     if(query_state_inputDigital(btn_UP)){
-
-      myOLED.clrScr(); // borra la pantalla
-      myOLED.setFont(SmallFont);//seteo el tamaño de la fuente
-      myOLED.drawBitmap(0,0,temperatura,128,64);
-
-      stateTEMP = changePWM(true, stateTEMP, rangTEMP_Min, rangTEMP_Max, constIncremetoDecrementoTEMP);
-      myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
-      myOLED.printNumI(stateTEMP, 70, 0);
-      myOLED.update();
-      Serial.println(stateTEMP);
+      setTEMP = changePWM(true, setTEMP, rangTEMP_Min, rangTEMP_Max, constIncremetoDecrementoTEMP);
+      Serial.println(setTEMP);
     }else if(query_state_inputDigital(btn_DOWN)){
-
-      myOLED.clrScr(); // borra la pantalla
-      myOLED.setFont(SmallFont);//seteo el tamaño de la fuente
-      myOLED.drawBitmap(0,0,temperatura,128,64);
-
-      stateTEMP = changePWM(false, stateTEMP, rangTEMP_Min, rangTEMP_Max, constIncremetoDecrementoTEMP);
-      myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
-      myOLED.printNumI(stateTEMP, 70, 0);
-      myOLED.update();
-      Serial.println(stateTEMP);
+      setTEMP = changePWM(false, setTEMP, rangTEMP_Min, rangTEMP_Max, constIncremetoDecrementoTEMP);
+      setViewTemp();
+      Serial.println(setTEMP);
     }
   }
   myOLED.invert(invertirBackground); //  invierter el backgroud del display
@@ -593,14 +632,22 @@ void ajustes_TEMP_FAN(){
   myOLED.invert(!invertirBackground); //  invierter el backgroud del display
     //muestra estado actual de la FAN
   Serial.println("fixes fan");
+  setViewFAN();
+  myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
+  myOLED.printNumI(setFAN, 70, 0);
+  myOLED.update();
   while(!query_state_inputDigital(btn_inSetup)){
     delay(delay_estados);
+    myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
+    myOLED.printNumI(setFAN, 70, 0);
+    myOLED.update();
     if(query_state_inputDigital(btn_UP)){
-      stateFAN = changePWM(true, stateFAN, rangFAN_Min, rangFAN_Max, constIncremetoDecrementoFAN);
-      Serial.println(stateFAN);
+      setFAN = changePWM(true, setFAN, rangFAN_Min, rangFAN_Max, constIncremetoDecrementoFAN);
+      Serial.println(setFAN);
     }else if(query_state_inputDigital(btn_DOWN)){
-      stateFAN = changePWM(false, stateFAN, rangFAN_Min, rangFAN_Max, constIncremetoDecrementoFAN);
-      Serial.println(stateFAN);
+      setFAN = changePWM(false, setFAN, rangFAN_Min, rangFAN_Max, constIncremetoDecrementoFAN);
+      setViewFAN();
+      Serial.println(setFAN);
     }
   }
   viewCurrent = 1;
