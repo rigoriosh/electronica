@@ -565,9 +565,7 @@ void TEMP_FAN_off_on(char action[]){
         int pwm = (255 * i) / 100;
         analogWrite(salida_pwm_FAN, pwm);
         stateFAN = i; 
-        myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
-        myOLED.printNumI(i, 0, 5);
-        myOLED.update();
+        printNumber(i, 0, 5);
       }
     }
   }else{
@@ -578,15 +576,17 @@ void TEMP_FAN_off_on(char action[]){
         int pwm = (255 * i) / 100;
         analogWrite(salida_pwm_FAN, pwm);
         stateFAN = i; 
-        myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
-        myOLED.printNumI(i, 0, 5);
-        myOLED.update();
-        initPanelFrontal();
+        printNumber(i, 0, 5);
       }
     }
     stateFAN = 0; // resetstate del FAN
-    initPanelFrontal();
   }
+}
+
+void printNumber(int dato, int x, int y){
+  myOLED.setFont(MediumNumbers);//seteo el tamaño de la fuente
+  myOLED.printNumI(dato, x, y);
+  myOLED.update();
 }
 
 void initPanelFrontal(){
@@ -603,7 +603,7 @@ void readTEMP_actual(){
     SUMA = SUMA + analogRead(A0);
     // delay(5);
   }
-  SENSOR_TEMP = SUMA / 2000.0;
+  SENSOR_TEMP = SUMA / countPromedio;
   TEMP_GRADOS_CELCIUS = ((SENSOR_TEMP * 5000.0)/1023)/10; // resultado en °C
   Serial.println(TEMP_GRADOS_CELCIUS); // imprime solo una fracción decimal
   stateTEMP = TEMP_GRADOS_CELCIUS;
