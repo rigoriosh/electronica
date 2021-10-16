@@ -360,9 +360,9 @@ void setup() {
   myOLED.invert(true); //  invierter el backgroud del display
   //  myOLED.print("TEMPERATURA: ", 0, 0);//imprime la frase entre comillas
   //  myOLED.print(" oC ", 95, 0);
-   myOLED.drawBitmap(0,0,temperatura,128,64);
+  myOLED.drawBitmap(0,0,temperatura,128,64);
   // myOLED.drawBitmap(0,0,FAN,128,64);
-//  myOLED.drawBitmap(0,0,containerSi,128,64);
+  //  myOLED.drawBitmap(0,0,containerSi,128,64);
   // myOLED.drawBitmap(0,0,containerNo,128,64);
   // myOLED.drawBitmap(0,0,bateria,128,64);
   myOLED.update();
