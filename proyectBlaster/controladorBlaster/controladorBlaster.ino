@@ -3,8 +3,8 @@ const int btn_inSetup = 8;
 const int btn_UP = 7;
 const int btn_DOWN = 12;
 const int btn_TRIGGER = 4;
-const int salida_pwm_TEMP = 5;
-const int salida_pwm_FAN = 9;
+const int salida_pwm_TEMP = 6;
+const int salida_pwm_FAN = 5;
 const int input_TEMP = A0;
 //
 
