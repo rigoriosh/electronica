@@ -3,9 +3,10 @@ const int out_led_Logo = 2;
 const int out_led_band = 3;
 const int btn_TRIGGER = 4;
 const int out_pwm_FAN = 5;
-const int out_pwm_TEMP = 6;
+const int out_TEMP = 6;
 const int btn_UP = 7;
 const int btn_inSetup = 8;
+const int out_loadBatery = 9;
 const int btn_DOWN = 12;
 const int input_TEMP = A0;
 const int input_sens_container = A1;
@@ -631,14 +632,15 @@ void setup() {
   pinMode(btn_DOWN, INPUT_PULLUP);
   pinMode(btn_TRIGGER, INPUT_PULLUP);
   pinMode(out_led_Logo,  OUTPUT);
-  pinMode(out_pwm_TEMP, OUTPUT);
+  pinMode(out_TEMP, OUTPUT);
   pinMode(out_pwm_FAN, OUTPUT);
   pinMode(out_led_band, OUTPUT);
+  pinMode(out_loadBatery, OUTPUT);
   // set OLED
   myOLED.begin();//inicializa el display OLED
   myOLED.rotateDisplay(true); // rotación de la pantalla
 
-  analogWrite(out_pwm_TEMP, 255); // apaga la resistencia
+  analogWrite(out_TEMP, 255); // apaga la resistencia
   
 }
 
@@ -783,7 +785,7 @@ void TEMP_FAN_off_on(char action[]){
       //for(int i = 255; i >= 150; i--){
         // int pwm = (255 * i) / 100;
         //Serial.println(i);
-        analogWrite(out_pwm_TEMP, 0); // enciendo la holla
+        analogWrite(out_TEMP, 0); // enciendo la holla
         // stateTEMP_pwm = i;
         // setViewTemPanelFrontal();
       //}
@@ -801,7 +803,7 @@ void TEMP_FAN_off_on(char action[]){
     }
     
   }else{
-    analogWrite(out_pwm_TEMP, 255);
+    analogWrite(out_TEMP, 255);
     stateTEMP_pwm = 255;
     
     if(stateFAN > 1){
