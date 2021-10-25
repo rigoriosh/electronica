@@ -1,11 +1,15 @@
 // variables hardware
-const int btn_inSetup = 8;
-const int btn_UP = 7;
-const int btn_DOWN = 12;
+const int out_led_Logo = 2;
+const int out_led_band = 3;
 const int btn_TRIGGER = 4;
-const int salida_pwm_TEMP = 6;
-const int salida_pwm_FAN = 5;
+const int out_pwm_FAN = 5;
+const int out_TEMP = 6;
+const int btn_UP = 7;
+const int btn_inSetup = 8;
+const int out_loadBatery = 9;
+const int btn_DOWN = 12;
 const int input_TEMP = A0;
+const int input_sens_container = A1;
 //
 
 /// utils app
@@ -627,11 +631,16 @@ void setup() {
   pinMode(btn_UP, INPUT_PULLUP);
   pinMode(btn_DOWN, INPUT_PULLUP);
   pinMode(btn_TRIGGER, INPUT_PULLUP);
+  pinMode(out_led_Logo,  OUTPUT);
+  pinMode(out_TEMP, OUTPUT);
+  pinMode(out_pwm_FAN, OUTPUT);
+  pinMode(out_led_band, OUTPUT);
+  pinMode(out_loadBatery, OUTPUT);
   // set OLED
   myOLED.begin();//inicializa el display OLED
   myOLED.rotateDisplay(true); // rotación de la pantalla
 
-  analogWrite(salida_pwm_TEMP, 255); // apaga la resistencia
+  analogWrite(out_TEMP, 255); // apaga la resistencia
   
 }
 
@@ -776,7 +785,7 @@ void TEMP_FAN_off_on(char action[]){
       //for(int i = 255; i >= 150; i--){
         // int pwm = (255 * i) / 100;
         //Serial.println(i);
-        analogWrite(salida_pwm_TEMP, 0); // enciendo la holla
+        analogWrite(out_TEMP, 0); // enciendo la holla
         // stateTEMP_pwm = i;
         // setViewTemPanelFrontal();
       //}
@@ -787,27 +796,27 @@ void TEMP_FAN_off_on(char action[]){
     if(stateFAN < setFAN){ // enciendo el FAN
       for(int i = 0; i <= setFAN; i++){
         int pwm = (255 * i) / 100;
-        analogWrite(salida_pwm_FAN, pwm); // modifica pwm FAN
+        analogWrite(out_pwm_FAN, pwm); // modifica pwm FAN
         stateFAN = i; 
         printNumber(i, 0, 5); // muestro stateFAN panelFrontal
       }
     }
     
   }else{
-    analogWrite(salida_pwm_TEMP, 255);
+    analogWrite(out_TEMP, 255);
     stateTEMP_pwm = 255;
     
     if(stateFAN > 1){
       for(int i = setFAN; i > 1; i--){
         int pwm = (255 * i) / 100;
-        analogWrite(salida_pwm_FAN, pwm);
+        analogWrite(out_pwm_FAN, pwm);
         stateFAN = i; 
         if(i == 99){// si tiene mas de 3 digitos limpia la pantalla
           initPanelFrontal();
         }
         printNumber(i, 0, 5);
       }
-      analogWrite(salida_pwm_FAN, 0);
+      analogWrite(out_pwm_FAN, 0);
     }
     stateFAN = 0; // resetstate del FAN
   }
